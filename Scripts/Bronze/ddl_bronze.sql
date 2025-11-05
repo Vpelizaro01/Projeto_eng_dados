@@ -1,28 +1,33 @@
+
 -- Criar tabela com as informções do clientes.
-DROP TABLE if EXISTS bronze.crm_cli_info;
-CREATE TABLE bronze.crm_cli_info(
+DROP TABLE if EXISTS prata.crm_cli_info;
+CREATE TABLE prata.crm_cli_info(
 	cst_id INT,
 	cst_key VARCHAR (50),
 	cst_firstname VARCHAR (50),
 	cst_lastname VARCHAR (50),
-	cst_maarital_status VARCHAR (50),
+	cst_marital_status VARCHAR (50),
 	cst_gndr VARCHAR (50),
-	cst_create_data DATE
+	cst_create_date DATE,			
+	dwh_create_date TIMESTAMP DEFAULT NOW()
+	
 );
 -- Criar tabela com as informções dos produtos.
-DROP TABLE if EXISTS bronze.crm_prod_info;
-CREATE TABLE bronze.crm_prod_info(
+DROP TABLE if EXISTS prata.crm_prod_info;
+CREATE TABLE prata.crm_prod_info(
 	prd_id INT,
 	prd_key VARCHAR (50),
 	prd_nm VARCHAR (50),
 	prd_cost INT,
 	prd_line VARCHAR (50),
 	prd_start_dt DATE,
-	prd_end_dt DATE
+	prd_end_dt DATE,
+	dwh_create_date TIMESTAMP DEFAULT NOW()
+
 );
 --Criar tabela com as informções de vendas.
-DROP TABLE if EXISTS bronze.crm_vendas_info;
-CREATE TABLE bronze.crm_vendas_info(
+DROP TABLE if EXISTS prata.crm_vendas_info;
+CREATE TABLE prata.crm_vendas_info(
 	sls_ord_num VARCHAR (50),
 	sls_prd_key VARCHAR (50),
 	sls_cust_id INT,
@@ -31,41 +36,49 @@ CREATE TABLE bronze.crm_vendas_info(
 	sls_due_dt INT,
 	sls_sales INT,
 	sls_quantity INT,
-	sls_price INT
+	sls_price INT,
+	dwh_create_date TIMESTAMP DEFAULT NOW()
+	
 );
 
 --Criar tabela clientes.
-DROP TABLE if EXISTS bronze.erp_cust_info;
-CREATE TABLE bronze.erp_cust_info(
+DROP TABLE if EXISTS prata.erp_cust_info;
+CREATE TABLE prata.erp_cust_info(
 	cep VARCHAR(50),
 	bdate DATE,
-	gndr VARCHAR
+	gndr VARCHAR,
+	dwh_create_date TIMESTAMP DEFAULT NOW()
+
 );
 
 -- renomear as tabelas para evitar conflitos com arquivos CSV
-ALTER TABLE bronze.erp_cust_info
+ALTER TABLE prata.erp_cust_info
 RENAME COLUMN cep TO cid;
 
 --Criar tabela com localição dos clientes.
-DROP TABLE if EXISTS bronze.erp_local_info;
-CREATE TABLE bronze.erp_local_info(
+DROP TABLE if EXISTS prata.erp_local_info;
+CREATE TABLE prata.erp_local_info(
 	cep VARCHAR(50),
-	pais VARCHAR(50)
+	pais VARCHAR(50),
+	dwh_create_date TIMESTAMP DEFAULT NOW()
+
 );
 
 --Criar tabela com categorias.
-DROP TABLE if EXISTS bronze.erp_px_cat;
-CREATE TABLE bronze.erp_px_cat(
+DROP TABLE if EXISTS prata.erp_px_cat;
+CREATE TABLE prata.erp_px_cat(
 	id VARCHAR(50),
 	cat VARCHAR (50),
 	subcat VARCHAR (50),
-	maintenace VARCHAR (50)
+	maintenace VARCHAR (50),
+	dwh_create_date TIMESTAMP DEFAULT NOW()
+
 );
 -- renomear as tabelas para evitar conflitos com arquivos CSV
-ALTER TABLE bronze.erp_local_info
+ALTER TABLE prata.erp_local_info
 RENAME COLUMN cep TO cid;
 
-ALTER TABLE bronze.erp_local_info
+ALTER TABLE prata.erp_local_info
 RENAME COLUMN pais TO cntry;
 
 
@@ -75,12 +88,12 @@ RENAME COLUMN pais TO cntry;
 --Utilizei dos comandos FORMAT,HEADER e DELIMITER para que o arquivo fosse importado corretamente
 --SELECT foi utilizado para ver os conteudos postos nas tabelas
 
-CREATE OR REPLACE PROCEDURE bronze.load_bronze()
+CREATE OR REPLACE PROCEDURE prata.load_prata()
 LANGUAGE plpgsql
 AS $$
 BEGIN
     RAISE NOTICE '=====================================';
-    RAISE NOTICE 'Carregando camada bronze';
+    RAISE NOTICE 'Carregando camada prata';
     RAISE NOTICE '=====================================';
     
     RAISE NOTICE '----------------------------';
@@ -88,26 +101,26 @@ BEGIN
     RAISE NOTICE '----------------------------';
     
     RAISE NOTICE 'Limpando a tabela com TRUNCATE';
-    TRUNCATE TABLE bronze.crm_cli_info;
+    TRUNCATE TABLE prata.crm_cli_info;
     
     RAISE NOTICE 'Inserindo os dados na tabela';
-    COPY bronze.crm_cli_info
+    COPY prata.crm_cli_info
     FROM 'L:/sql-data-warehouse-project/datasets/source_crm/cust_info.csv'
     WITH (FORMAT CSV, HEADER true, DELIMITER ',');
     
     RAISE NOTICE 'Limpando a tabela com TRUNCATE';
-    TRUNCATE TABLE bronze.crm_prod_info;
+    TRUNCATE TABLE prata.crm_prod_info;
     
     RAISE NOTICE 'Inserindo os dados na tabela';
-    COPY bronze.crm_prod_info
+    COPY prata.crm_prod_info
     FROM 'L:/sql-data-warehouse-project/datasets/source_crm/prd_info.csv'
     WITH (FORMAT CSV, HEADER true, DELIMITER ',');
     
     RAISE NOTICE 'Limpando a tabela com TRUNCATE';
-    TRUNCATE TABLE bronze.crm_vendas_info;
+    TRUNCATE TABLE prata.crm_vendas_info;
    
     RAISE NOTICE 'Inserindo os dados na tabela';
-    COPY bronze.crm_vendas_info
+    COPY prata.crm_vendas_info
     FROM 'L:/sql-data-warehouse-project/datasets/source_crm/sales_details.csv'
     WITH (FORMAT CSV, HEADER true, DELIMITER ',');
     
@@ -116,26 +129,26 @@ BEGIN
     RAISE NOTICE '----------------------------';
     
     RAISE NOTICE 'Limpando a tabela com TRUNCATE';
-    TRUNCATE TABLE bronze.erp_cust_info;
+    TRUNCATE TABLE prata.erp_cust_info;
     
     RAISE NOTICE 'Inserindo os dados na tabela';
-    COPY bronze.erp_cust_info
+    COPY prata.erp_cust_info
     FROM 'L:/sql-data-warehouse-project/datasets/source_erp/CUST_AZ12.csv'
     WITH (FORMAT CSV, HEADER true, DELIMITER ',');
     
     RAISE NOTICE 'Limpando a tabela com TRUNCATE';
-    TRUNCATE TABLE bronze.erp_local_info;
+    TRUNCATE TABLE prata.erp_local_info;
     
     RAISE NOTICE 'Inserindo os dados na tabela';
-    COPY bronze.erp_local_info
+    COPY prata.erp_local_info
     FROM 'L:/sql-data-warehouse-project/datasets/source_erp/LOC_A101.csv'
     WITH (FORMAT CSV, HEADER true, DELIMITER ',');
     
     RAISE NOTICE 'Limpando a tabela com TRUNCATE';
-    TRUNCATE TABLE bronze.erp_px_cat;
+    TRUNCATE TABLE prata.erp_px_cat;
    
     RAISE NOTICE 'Inserindo os dados na tabela';
-    COPY bronze.erp_px_cat
+    COPY prata.erp_px_cat
     FROM 'L:/sql-data-warehouse-project/datasets/source_erp/PX_CAT_G1V2.csv'
     WITH (FORMAT CSV, HEADER true, DELIMITER ',');
     
@@ -152,5 +165,4 @@ EXCEPTION
         RAISE NOTICE '==================';
         RAISE; 
 END;
-$$;
 $$;
