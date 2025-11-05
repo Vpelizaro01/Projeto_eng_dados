@@ -5,7 +5,7 @@ Bem vindo ao meu primero grande projeto sobre **Armazém de dados e Análise de 
 
 Neste projeto utilizo meu conhecimento de metódos de engenharia de software e a utilizos par ater uma melhor documnetção, organização e otimização de processos. 
 Além disso neste projeto criei um armazém de dados com metódos modernos com PostgreSQL, ETL, modelagem de dados e analytics.
----
+
 ## 
 Objetivo:
 Criar análises baseadas em SQL que ofereçam insights reais e detalhados sobre o desempenho da empresa, apoiando a tomada de decisões estratégicas.
