@@ -15,7 +15,7 @@ SELECT
         ELSE COALESCE(ca.gndr, 'n/a')
     END AS genero,
     ca.bdate AS aniversario,
-    ci.cst_create_date AS data_criacao
+   ci.dwh_create_date  AS data_criacao
 FROM prata.crm_cli_info AS ci
 LEFT JOIN prata.erp_cust_info AS ca
     ON ci.cst_key = ca.cid
