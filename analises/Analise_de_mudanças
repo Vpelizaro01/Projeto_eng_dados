@@ -1,0 +1,34 @@
+SELECT 
+    EXTRACT(YEAR FROM data_pedido) AS ano_do_pedido,
+    EXTRACT(MONTH FROM data_pedido) AS mes_do_pedido,
+    COUNT(DISTINCT chave_cliente) AS total_clientes,
+    SUM(quantidade) AS quantidade_total
+FROM ouro.dimensao_vendas
+WHERE data_pedido IS NOT NULL
+GROUP BY EXTRACT(YEAR FROM data_pedido), EXTRACT(MONTH FROM data_pedido)
+ORDER BY EXTRACT(YEAR FROM data_pedido), EXTRACT(MONTH FROM data_pedido);		
+----------------------------------------------------------------------------
+SELECT 
+    TO_CHAR(data_pedido, 'Mon-YYYY') AS data_pedido,
+    COUNT(DISTINCT chave_cliente) AS total_clientes,
+    SUM(quantidade) AS quantidade_total
+FROM ouro.dimensao_vendas
+WHERE data_pedido IS NOT NULL
+GROUP BY TO_CHAR(data_pedido, 'Mon-YYYY')
+ORDER BY TO_CHAR(data_pedido, 'Mon-YYYY');
+-----------------------------------------------------------------------------
+SELECT 
+    DATE_TRUNC('month', data_pedido) AS data_pedido,
+    COUNT(DISTINCT chave_cliente) AS total_clientes,
+    SUM(quantidade) AS quantidade_total
+FROM ouro.dimensao_vendas
+WHERE data_pedido IS NOT NULL
+GROUP BY DATE_TRUNC('month', data_pedido)
+ORDER BY DATE_TRUNC('month', data_pedido);
+-----------------------------------------------------------------------------
+SELECT 
+    DATE_TRUNC('year', data_criacao) AS ano_da_criacao_do_pedido,
+    COUNT( numero_do_cliente) AS total_clientes
+FROM ouro.dimensao_clientes
+GROUP BY DATE_TRUNC('year', data_criacao)
+ORDER BY DATE_TRUNC('year', data_criacao);
