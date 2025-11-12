@@ -1,12 +1,14 @@
+-- Criar tabela com as informções do clientes.
 DROP TABLE if EXISTS prata.crm_cli_info;
 CREATE TABLE prata.crm_cli_info(
 	cst_id INT,
 	cst_key VARCHAR (50),
-	cst_firtsname VARCHAR (50),
+	cst_firstname VARCHAR (50),
 	cst_lastname VARCHAR (50),
-	cst_material_status VARCHAR (50),
+	cst_marital_status VARCHAR (50),
 	cst_gndr VARCHAR (50),
-	cst_create_date DATE
+	cst_create_date DATE,			
+	dwh_create_date TIMESTAMP DEFAULT NOW()
 	
 );
 -- Criar tabela com as informções dos produtos.
@@ -19,7 +21,8 @@ CREATE TABLE prata.crm_prod_info(
 	prd_line VARCHAR (50),
 	prd_start_dt DATE,
 	prd_end_dt DATE,
-	cst_create_date DATE
+	dwh_create_date TIMESTAMP DEFAULT NOW()
+
 );
 --Criar tabela com as informções de vendas.
 DROP TABLE if EXISTS prata.crm_vendas_info;
@@ -27,13 +30,14 @@ CREATE TABLE prata.crm_vendas_info(
 	sls_ord_num VARCHAR (50),
 	sls_prd_key VARCHAR (50),
 	sls_cust_id INT,
-	sls_order_dt INT,	
-	sls_ship_dt INT,	
-	sls_due_dt INT,
+	sls_order_dt DATE,	
+	sls_ship_dt DATE,	
+	sls_due_dt DATE,
 	sls_sales INT,
 	sls_quantity INT,
 	sls_price INT,
-	cst_create_date DATE
+	dwh_create_date TIMESTAMP DEFAULT NOW()
+	
 );
 
 --Criar tabela clientes.
@@ -42,7 +46,8 @@ CREATE TABLE prata.erp_cust_info(
 	cep VARCHAR(50),
 	bdate DATE,
 	gndr VARCHAR,
-	cst_create_date DATE
+	dwh_create_date TIMESTAMP DEFAULT NOW()
+
 );
 
 -- renomear as tabelas para evitar conflitos com arquivos CSV
@@ -54,7 +59,8 @@ DROP TABLE if EXISTS prata.erp_local_info;
 CREATE TABLE prata.erp_local_info(
 	cep VARCHAR(50),
 	pais VARCHAR(50),
-	cst_create_date DATE
+	dwh_create_date TIMESTAMP DEFAULT NOW()
+
 );
 
 --Criar tabela com categorias.
@@ -63,8 +69,9 @@ CREATE TABLE prata.erp_px_cat(
 	id VARCHAR(50),
 	cat VARCHAR (50),
 	subcat VARCHAR (50),
-	maintenace VARCHAR (50),
-	cst_create_date DATE
+	maintenance VARCHAR (50),
+	dwh_create_date TIMESTAMP DEFAULT NOW()
+
 );
 -- renomear as tabelas para evitar conflitos com arquivos CSV
 ALTER TABLE prata.erp_local_info
