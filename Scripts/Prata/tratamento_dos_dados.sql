@@ -74,7 +74,7 @@ BEGIN
         prd_line,
         prd_start_dt,
         prd_end_dt,
-        cst_create_date 
+        dwh_create_date 
     )
     SELECT 
         prd_id,
@@ -120,37 +120,51 @@ BEGIN
         sls_quantity,
         sls_price
     )
-    SELECT
-        sls_ord_num,
-        sls_prd_key,
-        sls_cust_id,
-        CASE 
-            WHEN sls_order_dt = 0 OR LENGTH(sls_order_dt::text) != 8 THEN NULL
-            ELSE TO_DATE(sls_order_dt::text, 'YYYYMMDD')
-        END,
-        CASE 
-            WHEN sls_ship_dt = 0 OR LENGTH(sls_ship_dt::text) != 8 THEN NULL
-            ELSE TO_DATE(sls_ship_dt::text, 'YYYYMMDD')
-        END,
-        CASE 
-            WHEN sls_due_dt = 0 OR LENGTH(sls_due_dt::text) != 8 THEN NULL
-            ELSE TO_DATE(sls_due_dt::text, 'YYYYMMDD')
-        END,
-        CASE 
-            WHEN sls_sales IS NULL 
-              OR sls_sales <= 0 
-              OR sls_sales != sls_quantity * ABS(sls_price)
-            THEN sls_quantity * ABS(sls_price)
-            ELSE sls_sales
-        END,
-        sls_quantity,
-        CASE 
-            WHEN sls_price IS NULL 
-              OR sls_price <= 0 
-            THEN (sls_sales / NULLIF(sls_quantity, 0))
-            ELSE ABS(sls_price)
-        END
-    FROM bronze.crm_vendas_info;
+   SELECT
+    sls_ord_num,
+    sls_prd_key,
+    sls_cust_id,
+
+    CASE 
+        WHEN sls_order_dt = 0 OR LENGTH(sls_order_dt::text) != 8 THEN NULL
+        ELSE TO_DATE(sls_order_dt::text, 'YYYYMMDD')
+    END AS sls_order_dt,
+    
+
+    CASE 
+        WHEN sls_ship_dt = 0 OR LENGTH(sls_ship_dt::text) != 8 THEN NULL
+        ELSE TO_DATE(sls_ship_dt::text, 'YYYYMMDD')
+    END AS sls_ship_dt,
+    
+   
+    CASE 
+        WHEN sls_due_dt = 0 OR LENGTH(sls_due_dt::text) != 8 THEN NULL
+        ELSE TO_DATE(sls_due_dt::text, 'YYYYMMDD')
+    END AS sls_due_dt,
+	
+	sls_quantity,
+    
+	CASE 
+        WHEN sls_sales IS NULL 
+             OR sls_sales <= 0 
+             OR sls_sales != sls_quantity * ABS(sls_price)
+        THEN sls_quantity * ABS(sls_price)
+        ELSE sls_sales
+    END AS sls_sales,
+
+    CASE 
+        WHEN sls_price IS NULL 
+             OR sls_price <= 0
+        THEN 
+            CASE 
+                WHEN sls_quantity IS NULL OR sls_quantity = 0 THEN NULL
+                ELSE ABS(sls_sales) / sls_quantity
+            END
+        ELSE sls_price
+    END AS sls_price
+
+FROM bronze.crm_vendas_info;
+
 
     v_batch_end := clock_timestamp();
     RAISE NOTICE 'Carga de prata.crm_vendas_info concluída em % segundos', 
@@ -168,7 +182,7 @@ BEGIN
         id,
         cat,
         subcat,
-        maintenance
+        maintenace
     )
     SELECT 
         id,
@@ -192,4 +206,3 @@ EXCEPTION WHEN OTHERS THEN
     RAISE NOTICE 'ERRO na execução da procedure: %', SQLERRM;
 END;
 $$;
-
